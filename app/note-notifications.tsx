@@ -22,27 +22,36 @@ export function NoteNotifications() {
   const [setup, setSetup] = useState<{ registration: ServiceWorkerRegistration; key: string }>();
   const [enabled, setEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('در حال بررسی امکان ارسال اعلان…');
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production' || !('serviceWorker' in navigator)
-      || !('PushManager' in window) || !('Notification' in window)) return;
+    if (process.env.NODE_ENV !== 'production') {
+      setStatus('برای آزمایش اعلان، نسخهٔ منتشرشده در Netlify را باز کن.');
+      return;
+    }
+    if (!('serviceWorker' in navigator)
+      || !('PushManager' in window) || !('Notification' in window)) {
+      setStatus('اعلان در این مرورگر یا حالت در دسترس نیست. روی آیفون، هم‌یاد را از آیکون صفحهٔ اصلی باز کن.');
+      return;
+    }
     let cancelled = false;
     const abort = new AbortController();
     void (async () => {
       try {
         const response = await fetch(endpoint, { signal: abort.signal });
-        if (!response.ok) return;
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const { publicKey } = await response.json();
-        if (typeof publicKey !== 'string' || !/^[\w-]{87}$/.test(publicKey)) return;
+        if (typeof publicKey !== 'string' || !/^[\w-]{87}$/.test(publicKey)) throw new Error('invalid public key');
+        if (!cancelled) setStatus('در انتظار فعال‌شدن سرویس برنامه…');
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         if (!cancelled) {
           setEnabled(!!subscription);
           setSetup({ registration, key: publicKey });
+          setStatus('');
         }
       } catch {
-        // An unavailable push endpoint should not affect the notes feed.
+        if (!cancelled) setStatus('سرویس اعلان در دسترس نیست. تنظیمات Netlify یا اتصال را بررسی کن.');
       }
     })();
     return () => { cancelled = true; abort.abort(); };
@@ -85,9 +94,8 @@ export function NoteNotifications() {
     }
   }
 
-  if (!setup) return null;
   return <div className="note-notifications">
-    <button type="button" aria-pressed={enabled} disabled={busy} onClick={toggle}>اعلان یادداشت‌های جدید: {enabled ? 'روشن' : 'خاموش'}</button>
+    <button type="button" aria-pressed={enabled} disabled={!setup || busy} onClick={toggle}>اعلان یادداشت‌های جدید: {setup ? (enabled ? 'روشن' : 'خاموش') : 'در دسترس نیست'}</button>
     <span className="muted" role="status">{status}</span>
   </div>;
 }

@@ -455,13 +455,14 @@ main.wrap {
   display: grid;
   gap: 14px;
   padding-bottom: 24px;
-  grid-template-columns: repeat(3, 1fr);
-  place-items: baseline;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
 }
 .public-feed[data-layout="normal"] {
   place-items: normal;
 }
 .public-note {
+  min-width: 0;
   padding: clamp(14px, 3vw, 26px);
   overflow-wrap: anywhere;
 }
@@ -474,9 +475,8 @@ main.wrap {
 .public-note-heading .note-title {
   text-align: right;
   line-height: 1.55;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .public-note-heading .note-time {
   padding: 3px 7px;
@@ -520,7 +520,7 @@ main.wrap {
     min-height: 220px;
   }
   .public-feed {
-    grid-template-columns: auto;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 @media (max-width: 768px) {
@@ -530,7 +530,7 @@ main.wrap {
 }
 @media (min-width: 441px) and (max-width: 768px) {
   .public-feed {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 440px) {
