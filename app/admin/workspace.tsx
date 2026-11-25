@@ -3,7 +3,8 @@
 import { createClient, type Session, type SupabaseClient } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 
-import { hasConfig, key, noteDate, url } from '../config';
+import { hasConfig, key, url } from '../config';
+import { NoteTime, useNoteClock } from '../note-time';
 import { SiteHeader } from '../site-header';
 
 const columns = 'id,title,body,updated_at,revision,is_public';
@@ -59,6 +60,7 @@ function Login({ db }: { db: SupabaseClient }) {
 }
 
 function Notes({ db }: { db: SupabaseClient }) {
+  const now = useNoteClock();
   const [notes, setNotes] = useState<Note[]>([]);
   const [filter, setFilter] = useState('');
   const [active, setActive] = useState<string | null>(null);
@@ -173,7 +175,7 @@ function Notes({ db }: { db: SupabaseClient }) {
     <p className={'sync ' + (sync === 'error' ? 'error' : '')} role="status">{sync === 'ok' ? 'همگام‌سازی فعال است' : sync === 'loading' ? 'در حال دریافت یادداشت‌ها…' : 'ارتباط با سرور برقرار نیست. دوباره تلاش می‌شود.'}</p>
     <div className="board">
       <aside className="card list"><h2>یادداشت‌ها</h2><label className="search"><span className="sr-only">جست‌وجو در یادداشت‌ها</span><input type="search" placeholder="جست‌وجو…" value={filter} onChange={e => setFilter(e.target.value)} /></label>
-        {visible.length ? <ul>{visible.map(n => <li key={n.id}><button className="note" aria-pressed={active === n.id} onClick={() => open(n.id)} disabled={busy}><bdi>{n.title}</bdi><span className="note-meta"><span className={'badge' + (n.is_public ? ' published' : '')}>{n.is_public ? 'عمومی' : 'خصوصی'}</span><time dateTime={n.updated_at}>{noteDate.format(new Date(n.updated_at))}</time></span></button></li>)}</ul>
+        {visible.length ? <ul>{visible.map(n => <li key={n.id}><button className="note" aria-pressed={active === n.id} onClick={() => open(n.id)} disabled={busy}><bdi>{n.title}</bdi><span className="note-meta"><span className={'badge' + (n.is_public ? ' published' : '')}>{n.is_public ? 'عمومی' : 'خصوصی'}</span><NoteTime value={n.updated_at} now={now} /></span></button></li>)}</ul>
           : <p className="muted">{needle ? 'یادداشتی پیدا نشد.' : sync === 'ok' ? 'هنوز یادداشتی نداری.' : 'فهرست هنوز دریافت نشده.'}</p>}
       </aside>
       <section className="card editor" aria-labelledby="editor-title"><h2 id="editor-title">{fresh ? 'یادداشت جدید' : 'ویرایشگر'}</h2>

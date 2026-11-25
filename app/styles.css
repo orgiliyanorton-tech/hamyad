@@ -320,6 +320,15 @@ main.wrap {
   font-weight: 900;
   color: var(--accent-text);
 }
+.note-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.note-time svg {
+  flex: none;
+}
 .note time {
   color: var(--muted);
   font-size: 12px;
@@ -397,12 +406,41 @@ main.wrap {
 .visibility-hint {
   margin: 0 0 12px !important;
 }
+.public-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+.public-title-row h1 {
+  margin: 0;
+}
+.public-layout {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+.public-layout button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  padding: 0;
+}
+.public-layout button[aria-pressed="true"] {
+  background: var(--selected);
+  border-color: var(--accent-text);
+  color: var(--accent-text);
+}
 .public-feed {
   display: grid;
   gap: 14px;
   padding-bottom: 24px;
   grid-template-columns: repeat(3, 1fr);
   place-items: baseline;
+}
+.public-feed[data-layout="normal"] {
+  place-items: normal;
 }
 .public-note {
   padding: clamp(14px, 3vw, 26px);
@@ -444,6 +482,11 @@ main.wrap {
   }
   .public-feed {
     grid-template-columns: auto;
+  }
+}
+@media (max-width: 768px) {
+  .public-layout {
+    display: none;
   }
 }
 @media (min-width: 441px) and (max-width: 768px) {
