@@ -438,6 +438,11 @@ main.wrap {
     min-height: 220px;
   }
 }
+@media (width <= 375px) {
+  .brand {
+    gap: 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
