@@ -89,7 +89,10 @@ export function PublicNotes() {
       : !notes.length ? <p className="card muted">{page ? 'یادداشتی در این صفحه نیست.' : 'هنوز یادداشتی منتشر نشده است.'}</p>
       : <div className="public-feed" data-layout={layout}>{notes.slice(0, pageSize).map(note =>
       <article className="card public-note" key={note.id}>
-        <h2 className='note-title' dir="auto">{note.title}</h2><NoteTime value={note.updated_at} now={now} />
+        <header className="public-note-heading">
+          <h2 className="note-title" dir="auto" title={note.title}>{note.title}</h2>
+          <NoteTime value={note.updated_at} now={now} />
+        </header>
         {note.body && <p dir="auto">{note.body}</p>}
       </article>)}</div>}
     {(page > 0 || (notes?.length ?? 0) > pageSize) && <nav className="actions pagination" aria-label="صفحه‌بندی یادداشت‌ها">
