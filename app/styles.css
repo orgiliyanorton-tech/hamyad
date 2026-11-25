@@ -396,8 +396,8 @@ main.wrap {
 .public-feed {
   display: grid;
   gap: 14px;
-  max-width: 780px;
   padding-bottom: 24px;
+  grid-template-columns: repeat(3, 1fr);
 }
 .public-note {
   padding: clamp(14px, 3vw, 26px);
@@ -437,10 +437,21 @@ main.wrap {
   textarea {
     min-height: 220px;
   }
+  .public-feed {
+    grid-template-columns: auto;
+  }
 }
-@media (width <= 375px) {
+@media (min-width: 441px) and (max-width: 768px) {
+  .public-feed {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 375px) {
   .brand {
-    gap: 0;
+    gap: 0 !important;
+  }
+  .wrap {
+    justify-content: center;
   }
 }
 @media (prefers-reduced-motion: reduce) {
