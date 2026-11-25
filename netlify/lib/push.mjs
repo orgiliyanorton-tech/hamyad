@@ -10,7 +10,17 @@ export const vapid = {
 export function pushDatabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key || !vapid.publicKey || !vapid.privateKey || !vapid.subject) return null;
+  if (!url || !key || !vapid.publicKey || !vapid.privateKey || !vapid.subject) {
+    const missing = [
+      !url && 'NEXT_PUBLIC_SUPABASE_URL',
+      !key && 'SUPABASE_SECRET_KEY (or SUPABASE_SERVICE_ROLE_KEY)',
+      !vapid.publicKey && 'VAPID_PUBLIC_KEY',
+      !vapid.privateKey && 'VAPID_PRIVATE_KEY',
+      !vapid.subject && 'VAPID_SUBJECT',
+    ].filter(Boolean);
+    console.warn('Web Push: missing runtime environment variables:', missing.join(', '));
+    return null;
+  }
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
