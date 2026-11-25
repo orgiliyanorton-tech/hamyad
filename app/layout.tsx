@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   icons: {
     icon: '/icons/hamyad-192.png',
+    shortcut: '/favicon.ico',
     apple: '/icons/hamyad-180.png',
   },
 };
