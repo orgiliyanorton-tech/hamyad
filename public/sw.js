@@ -20,6 +20,92 @@ const offlinePage = `<!doctype html>
 </body>
 </html>`;
 
+const pushApi = '/.netlify/functions/note-push';
+const notificationTag = 'hamyad-new-notes';
+let badgeTask = Promise.resolve();
+
+self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+
+function runBadgeTask(event, task) {
+  badgeTask = badgeTask.then(task).catch(() => {});
+  event.waitUntil(badgeTask);
+}
+
+function pushRequest(data) {
+  return fetch(pushApi, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+}
+
+async function setBadge(count) {
+  try {
+    if (count > 0) await self.navigator.setAppBadge?.(count);
+    else await self.navigator.clearAppBadge?.();
+  } catch {
+    // Some devices only support the system notification's dot.
+  }
+}
+
+async function clearAlerts() {
+  await setBadge(0);
+  const alerts = await self.registration.getNotifications({ tag: notificationTag });
+  for (const alert of alerts) alert.close();
+}
+
+self.addEventListener('push', event => {
+  runBadgeTask(event, async () => {
+    let payload = {};
+    try { payload = event.data?.json() ?? {}; } catch {}
+    let count = Number.isSafeInteger(payload.unread) && payload.unread > 0 ? payload.unread : 0;
+    if (typeof payload.id === 'string') {
+      try {
+        const response = await pushRequest({ action: 'count', id: payload.id });
+        if (response.ok) {
+          const { unread } = await response.json();
+          if (Number.isSafeInteger(unread) && unread >= 0) count = unread;
+        }
+      } catch {}
+    }
+    await self.registration.showNotification('هم‌یاد', {
+      body: count > 0 ? `${count.toLocaleString('fa-IR')} یادداشت عمومی جدید` : 'یادداشت‌های عمومی را در هم‌یاد ببین.',
+      icon: '/icons/hamyad-192.png',
+      badge: '/icons/hamyad-notification-badge.png',
+      tag: notificationTag,
+      silent: count === 0,
+      lang: 'fa',
+      dir: 'rtl',
+    });
+    await setBadge(count);
+  });
+});
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'HAMYAD_PUSH_DISABLED') {
+    runBadgeTask(event, clearAlerts);
+  } else if (event.data?.type === 'HAMYAD_NOTES_SEEN') {
+    runBadgeTask(event, async () => {
+      const subscription = await self.registration.pushManager.getSubscription();
+      if (!subscription) return;
+      const response = await pushRequest({ action: 'read', subscription });
+      if (response.ok) await clearAlerts();
+    });
+  }
+});
+
+self.addEventListener('notificationclick', event => {
+  if (event.notification.tag !== notificationTag) return;
+  event.notification.close();
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const publicPage = windows.find(client => new URL(client.url).pathname === '/');
+    if (publicPage) await publicPage.focus();
+    else await self.clients.openWindow('/');
+  })());
+});
+
 self.addEventListener('fetch', event => {
   const request = event.request;
   // Leave assets, API requests and note data untouched; never cache responses.

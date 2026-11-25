@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 import { hasConfig, key, url } from './config';
 import { NoteTime, useNoteClock } from './note-time';
+import { markPublicNotesSeen, NoteNotifications } from './note-notifications';
 
 type PublicNote = { id: string; title: string; body: string; updated_at: string };
 const pageSize = 12;
@@ -49,7 +50,10 @@ export function PublicNotes() {
       try {
         const { data, error } = await db.rpc('list_public_notes', { page_offset: page * pageSize }).abortSignal(signal);
         if (error) throw error;
-        if (!signal.aborted) setResult({ page, notes: data });
+        if (!signal.aborted) {
+          setResult({ page, notes: data });
+          if (page === 0 && document.visibilityState === 'visible') markPublicNotesSeen();
+        }
       } catch {
         if (!signal.aborted) setResult({ page, notes: null });
       }
@@ -82,6 +86,7 @@ export function PublicNotes() {
         </div>
       </div>
       <p>یادداشت‌های منتشرشده را اینجا، بدون ورود، بخوان.</p>
+      {hasConfig && <NoteNotifications />}
     </div>
     {!hasConfig ? <p className="card muted">دفتر عمومی هنوز راه‌اندازی نشده است.</p>
       : notes === undefined ? <p className="card muted" role="status">در حال دریافت یادداشت‌ها…</p>

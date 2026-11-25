@@ -542,6 +542,20 @@ main.wrap {
     font-size: 12px;
   }
 }
+.note-notifications {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-block-start: 10px;
+}
+.note-notifications button {
+  font-size: 13px;
+}
+.note-notifications button[aria-pressed="true"] {
+  border-color: var(--accent-text);
+  color: var(--accent-text);
+}
 .pwa-install {
   position: fixed;
   z-index: 5;
