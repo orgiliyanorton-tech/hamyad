@@ -402,6 +402,7 @@ main.wrap {
   gap: 14px;
   padding-bottom: 24px;
   grid-template-columns: repeat(3, 1fr);
+  place-items: baseline;
 }
 .public-note {
   padding: clamp(14px, 3vw, 26px);
