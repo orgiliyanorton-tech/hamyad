@@ -316,6 +316,10 @@ main.wrap {
   border-color: var(--accent);
   background: var(--selected);
 }
+.note-title {
+  font-weight: 900;
+  color: var(--accent-text);
+}
 .note time {
   color: var(--muted);
   font-size: 12px;

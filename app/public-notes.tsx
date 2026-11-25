@@ -45,8 +45,9 @@ export function PublicNotes() {
     {notes === undefined ? <p className="card muted" role="status">در حال دریافت یادداشت‌ها…</p>
       : notes === null ? <div className="card"><p className="error" role="alert">یادداشت‌ها دریافت نشدند.</p><button onClick={() => { setResult(undefined); setRetry(n => n + 1); }}>تلاش دوباره</button></div>
       : !notes.length ? <p className="card muted">{page ? 'یادداشتی در این صفحه نیست.' : 'هنوز یادداشتی منتشر نشده است.'}</p>
-      : <div className="public-feed">{notes.slice(0, pageSize).map(note => <article className="card public-note" key={note.id}>
-        <h2 dir="auto">{note.title}</h2><time dateTime={note.updated_at}>{noteDate.format(new Date(note.updated_at))}</time>
+      : <div className="public-feed">{notes.slice(0, pageSize).map(note => 
+      <article className="card public-note" key={note.id}>
+        <h2 className='note-title' dir="auto">{note.title}</h2><time dateTime={note.updated_at}>{noteDate.format(new Date(note.updated_at))}</time>
         {note.body && <p dir="auto">{note.body}</p>}
       </article>)}</div>}
     {(page > 0 || (notes?.length ?? 0) > pageSize) && <nav className="actions pagination" aria-label="صفحه‌بندی یادداشت‌ها">
