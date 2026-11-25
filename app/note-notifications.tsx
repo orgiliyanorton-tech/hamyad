@@ -95,7 +95,12 @@ export function NoteNotifications() {
   }
 
   return <div className="note-notifications">
-    <button type="button" aria-pressed={enabled} disabled={!setup || busy} onClick={toggle}>اعلان یادداشت‌های جدید: {setup ? (enabled ? 'روشن' : 'خاموش') : 'در دسترس نیست'}</button>
+    <button type="button" aria-pressed={enabled} disabled={!setup || busy} onClick={toggle}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" style={{ verticalAlign: 'middle', marginInlineEnd: 6 }}>
+        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21a2 2 0 0 0 4 0" />
+      </svg>
+      اعلان یادداشت‌های جدید: {setup ? (enabled ? 'روشن' : 'خاموش') : 'در دسترس نیست'}
+    </button>
     <span className="muted" role="status">{status}</span>
   </div>;
 }
