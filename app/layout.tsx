@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 const initialTheme = `try{var t=localStorage.getItem('hamyad-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch{}`;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="fa" dir="rtl" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: initialTheme }} /></head><body>{children}</body></html>;
+  return <html lang="fa" dir="rtl" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: initialTheme }} /></head><body>{children}<div className="checker-hatch-bg"></div></body></html>;
 }
